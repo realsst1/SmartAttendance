@@ -4,4 +4,11 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="about">Smart Attendance is an app for school authorities that want to take attendances in their classes using their phones.
+        \n\nThis is the first beta release of the app so expect some rough edges here and there.
+        \n\nThe whole system is powered by convolutional deep neural networks which identifies the student as well the activity he or she is performing.
+        \n\n\n\n&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+        Copyright 2019
+        \n&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Smart Attendance v1.0
+</string>
 </resources>

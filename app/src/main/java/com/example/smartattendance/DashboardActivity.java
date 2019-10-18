@@ -28,5 +28,14 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(DashboardActivity.this,StudentListActivity.class));
             }
         });
+
+        //about us
+
+        aboutUs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(DashboardActivity.this,AboutUsActivity.class));
+            }
+        });
     }
 }
