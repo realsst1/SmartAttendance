@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/colorPrimaryDark"
+    tools:context=".DashboardActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/arcView">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/viewStudents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="15dp">
+
+                <ImageView
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_gravity="center"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/student">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="View Students"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp"
+
+                    android:textStyle="bold">
+
+                </TextView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/addAttendance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="15dp">
+
+                <ImageView
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_gravity="center"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/camera">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Add Attendance"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp"
+
+                    android:textStyle="bold">
+
+                </TextView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/aboutUs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+           >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <ImageView
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_gravity="center"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/about">
+
+                </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="About Us"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp"
+
+                    android:textStyle="bold">
+
+                </TextView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+    </LinearLayout>
+
+    <com.github.florent37.shapeofview.shapes.ArcView
+        android:id="@+id/arcView"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:background="@color/colorPrimaryDark"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shape_arc_height="20dp"
+        app:shape_arc_position="bottom">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/square" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/headerText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="cursive"
+            android:gravity="center"
+            android:text="Smart Attendance Dashboard"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+    </com.github.florent37.shapeofview.shapes.ArcView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
