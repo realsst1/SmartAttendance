@@ -3,6 +3,7 @@ package com.example.smartattendance;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -24,11 +25,8 @@ public class DashboardActivity extends AppCompatActivity {
         viewStudents.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                startActivity(new Intent(DashboardActivity.this,StudentListActivity.class));
             }
         });
-
-
-
     }
 }

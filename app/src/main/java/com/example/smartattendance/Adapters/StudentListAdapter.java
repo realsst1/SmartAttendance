@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,10 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
     private ArrayList<Student> studentList;
     private Context context;
 
+    public StudentListAdapter(ArrayList<Student> studentList) {
+        this.studentList = studentList;
+    }
+
     @NonNull
     @Override
     public StudentListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -28,6 +33,12 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull StudentListAdapter.ViewHolder holder, int position) {
+
+        String name=studentList.get(position).getName();
+        String img=studentList.get(position).getImageURL();
+
+        holder.setStudentImage(img);
+        holder.setStudentName(name);
 
     }
 
@@ -44,6 +55,15 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             view=itemView;
+        }
+
+        public void setStudentName(String name){
+            TextView studentTextView=(TextView)view.findViewById(R.id.studentNameSingle);
+            studentTextView.setText(name);
+        }
+
+        public void setStudentImage(String img){
+
         }
 
 
