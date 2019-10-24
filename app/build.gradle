@@ -39,4 +39,7 @@ dependencies {
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
     implementation 'com.github.florent37:shapeofview:1.4.6'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
+    implementation 'id.zelory:compressor:2.1.0'
+
 }

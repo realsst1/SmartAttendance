@@ -14,6 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/LoginActivity">
         <activity android:name=".AboutUsActivity"></activity>
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
         <activity android:name=".StudentProfileActivity" />
         <activity android:name=".StudentListActivity" />
         <activity android:name=".DashboardActivity" />
