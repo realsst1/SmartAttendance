@@ -7,8 +7,10 @@ import androidx.cardview.widget.CardView;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,9 +24,15 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +82,7 @@ public class DashboardActivity extends AppCompatActivity {
                 CropImage.activity()
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .setAspectRatio(1, 1)
-                        .setMinCropResultSize(512, 512)
+                        .setMinCropResultSize(1024, 1024)
                         .start(DashboardActivity.this);
             }
         });
@@ -94,72 +102,108 @@ public class DashboardActivity extends AppCompatActivity {
                 progressDialog.show();
 
                 Uri resultUri = result.getUri();
+                System.out.println(resultUri.getPath());
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 String userID = currentUser.getUid();
 
                 File thumnbailFile = new File(resultUri.getPath());
-                Bitmap thumbnail = null;
+                Bitmap thumbnail = BitmapFactory.decodeFile(thumnbailFile.getAbsolutePath());
 
-                try {
-                    thumbnail = new Compressor(this)
-                            .setMaxWidth(400)
-                            .setMaxHeight(400)
-                            .setQuality(100)
-                            .compressToBitmap(thumnbailFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+
+                thumbnail=Bitmap.createScaledBitmap(thumbnail,224,224,false);
+//                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+//                final byte[] dataValue = byteArrayOutputStream.toByteArray();
+
+                //final StorageReference thumbPath = storageReference.child("profile_pictures").child("thumbs").child(userID + ".jpg");
+
+                int intValues[]=new int[thumbnail.getHeight()*thumbnail.getWidth()];
+                float floatValues[]=new float[thumbnail.getHeight()*thumbnail.getWidth()*3];
+                thumbnail.getPixels(intValues, 0, thumbnail.getWidth(), 0, 0, thumbnail.getWidth(), thumbnail.getHeight());
+
+                for (int i = 0; i < intValues.length; ++i) {
+                    final int val = intValues[i];
+                    floatValues[i * 3] = ((val >> 16) & 0xFF) / 255.0f;
+                    floatValues[i * 3 + 1] = ((val >> 8) & 0xFF) / 255.0f;
+                    floatValues[i * 3 + 2] = (val & 0xFF) / 255.0f;
                 }
 
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                final byte[] dataValue = byteArrayOutputStream.toByteArray();
-
-                final StorageReference thumbPath = storageReference.child("profile_pictures").child("thumbs").child(userID + ".jpg");
-
-                StorageReference filepath = storageReference.child("profile_pictures").child(userID + ".jpg");
-                filepath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()) {
-
-                            //final String downloadURI = task.getResult().getDownloadUrl().toString();
-                            UploadTask uploadTask = thumbPath.putBytes(dataValue);
-                            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                    if (task.isSuccessful()) {
-
-                                       // String thumbURI = task.getResult().getDownloadUrl().toString();
-                                        Map hashMap = new HashMap<>();
-//                                        hashMap.put("image", downloadURI);
-//                                        hashMap.put("thumbnail", thumbURI);
-
-                                        databaseReference.updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    progressDialog.dismiss();
-                                                } else {
-                                                    progressDialog.hide();
-                                                    Toast.makeText(DashboardActivity.this, "Error" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                                }
-                                            }
-                                        });
-
-                                    } else {
-                                        progressDialog.hide();
-                                        Toast.makeText(DashboardActivity.this, "Error" + task.getException().getMessage(), Toast.LENGTH_LONG);
-                                    }
-                                }
-                            });
+                float res[]=new float[72];
+                TensorFlowInferenceInterface inferenceInterface=new TensorFlowInferenceInterface(getAssets(),"file:///android_asset/retrained_graph.pb");
+                inferenceInterface.feed("Placeholder",floatValues,1,224,224,3);
+                inferenceInterface.run(new String[]{"final_result"});
 
 
-                        } else {
-                            progressDialog.hide();
-                            Toast.makeText(DashboardActivity.this, "Error" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
+                inferenceInterface.fetch("final_result",res);
+
+                System.out.println("success"+res[0]);
+
+                float max=Float.MIN_VALUE;
+                int pos=0;
+                ArrayList<Float> list=new ArrayList<>();
+                for(int i=0;i<res.length;i++){
+                    if(res[i]>max) {
+                        max = res[i];
+                        pos=i;
                     }
-                });
+                    System.out.println(res[i]);
+                    list.add(res[i]);
+                }
+
+                System.out.println("List\n"+list);
+                System.out.println("Pos:"+pos);
+                System.out.println("Max:"+ Collections.max(list));
+
+
+
+
+
+
+//                StorageReference filepath = storageReference.child("profile_pictures").child(userID + ".jpg");
+//                filepath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+//                        if (task.isSuccessful()) {
+//
+//                            //final String downloadURI = task.getResult().getDownloadUrl().toString();
+//                            UploadTask uploadTask = thumbPath.putBytes(dataValue);
+//                            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+//                                    if (task.isSuccessful()) {
+//
+//                                       // String thumbURI = task.getResult().getDownloadUrl().toString();
+//                                        Map hashMap = new HashMap<>();
+////                                        hashMap.put("image", downloadURI);
+////                                        hashMap.put("thumbnail", thumbURI);
+//
+//                                        databaseReference.updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                            @Override
+//                                            public void onComplete(@NonNull Task<Void> task) {
+//                                                if (task.isSuccessful()) {
+//                                                    progressDialog.dismiss();
+//                                                } else {
+//                                                    progressDialog.hide();
+//                                                    Toast.makeText(DashboardActivity.this, "Error" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+//                                                }
+//                                            }
+//                                        });
+//
+//                                    } else {
+//                                        progressDialog.hide();
+//                                        Toast.makeText(DashboardActivity.this, "Error" + task.getException().getMessage(), Toast.LENGTH_LONG);
+//                                    }
+//                                }
+//                            });
+//
+//
+//                        } else {
+//                            progressDialog.hide();
+//                            Toast.makeText(DashboardActivity.this, "Error" + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                });
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
