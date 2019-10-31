@@ -18,7 +18,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -33,9 +37,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +57,9 @@ public class DashboardActivity extends AppCompatActivity {
     private String text;
     private ArrayList<String> studentLabels=new ArrayList<>();
     private HashMap<String,String> studentMap=new HashMap<>();
+    private Date today;
+    private SimpleDateFormat sdfToday;
+    private String dateToSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +73,15 @@ public class DashboardActivity extends AppCompatActivity {
         progressDialog.setTitle("Uploading Image");
         progressDialog.setTitle("Please Wait while upload and get the result...");
         progressDialog.setCanceledOnTouchOutside(false);
+
+        today=Calendar.getInstance().getTime();
+        sdfToday=new SimpleDateFormat("dd-MM-yyyy");
+        dateToSearch=sdfToday.format(today);
+        System.out.println("Today:"+sdfToday.format(today));
+
+
+        databaseReference= FirebaseDatabase.getInstance().getReference().child("attendance");
+        databaseReference.keepSynced(true);
 
         //view Students
 
@@ -177,9 +196,53 @@ public class DashboardActivity extends AppCompatActivity {
                 System.out.println("List\n"+list);
                 System.out.println("Pos:"+pos);
                 System.out.println("Max:"+ Collections.max(list));
+                System.out.println("Identified:"+studentMap.get(String.valueOf(pos)));
 
-                Toast.makeText(DashboardActivity.this,studentMap.get(pos),Toast.LENGTH_LONG).show();
+                Toast.makeText(DashboardActivity.this,studentMap.get(String.valueOf(pos)),Toast.LENGTH_LONG).show();
                 progressDialog.dismiss();
+
+
+                //add attendance record
+
+                final int finalPos = pos;
+                databaseReference.child(String.valueOf(pos)).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        boolean flag=false;
+                        for(DataSnapshot d:dataSnapshot.getChildren()){
+                            String dateToCompare=d.child("date").getValue().toString();
+                            if(dateToCompare.equals(dateToSearch)){
+                                flag=true;
+                                break;
+                            }
+                        }
+                        if(flag==false){
+                            HashMap<String,String> dateMap=new HashMap<>();
+                            dateMap.put("date",dateToSearch);
+                            databaseReference.child(String.valueOf(finalPos)).push().setValue(dateMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()) {
+                                        Toast.makeText(DashboardActivity.this, "Attendance added successfully", Toast.LENGTH_LONG).show();
+                                        progressDialog.dismiss();
+                                    }
+                                    else{
+                                        Toast.makeText(DashboardActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                        progressDialog.dismiss();
+                                    }
+                                }
+                            });
+                        }
+                        else{
+                            Toast.makeText(DashboardActivity.this, "Attendance already taken for today", Toast.LENGTH_LONG).show();
+                            progressDialog.dismiss();
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
 
 
