@@ -70,9 +70,6 @@ public class DashboardActivity extends AppCompatActivity {
         viewStudents=(CardView)findViewById(R.id.viewStudents);
         aboutUs=(CardView)findViewById(R.id.aboutUs);
         progressDialog=new ProgressDialog(this);
-        progressDialog.setTitle("Uploading Image");
-        progressDialog.setTitle("Please Wait while upload and get the result...");
-        progressDialog.setCanceledOnTouchOutside(false);
 
         today=Calendar.getInstance().getTime();
         sdfToday=new SimpleDateFormat("dd-MM-yyyy");
@@ -138,8 +135,8 @@ public class DashboardActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
 
-                progressDialog.setTitle("Uploading Image");
-                progressDialog.setMessage("Please wait while we upload the image...");
+                progressDialog.setTitle("Analyzing Image");
+                progressDialog.setMessage("Please wait while we analyze the image...");
                 progressDialog.setCanceledOnTouchOutside(false);
                 progressDialog.show();
 
@@ -197,9 +194,6 @@ public class DashboardActivity extends AppCompatActivity {
                 System.out.println("Pos:"+pos);
                 System.out.println("Max:"+ Collections.max(list));
                 System.out.println("Identified:"+studentMap.get(String.valueOf(pos)));
-
-                Toast.makeText(DashboardActivity.this,studentMap.get(String.valueOf(pos)),Toast.LENGTH_LONG).show();
-                progressDialog.dismiss();
 
 
                 //add attendance record
