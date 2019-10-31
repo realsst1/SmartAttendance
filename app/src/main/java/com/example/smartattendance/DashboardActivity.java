@@ -26,9 +26,12 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +47,9 @@ public class DashboardActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
+    private String text;
+    private ArrayList<String> studentLabels=new ArrayList<>();
+    private HashMap<Integer,String> studentMap=new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +92,23 @@ public class DashboardActivity extends AppCompatActivity {
                         .start(DashboardActivity.this);
             }
         });
+
+
+        try{
+            InputStream inputStream=getAssets().open("retrained_labels.txt");
+            BufferedReader reader=new BufferedReader(new InputStreamReader(inputStream));
+            while((text=reader.readLine())!=null){
+                studentLabels.add(text);
+            }
+            //text=new String(buffer);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        System.out.println(studentLabels);
+        for(int i=0;i<studentLabels.size();i++){
+            studentMap.put(i,studentLabels.get(i));
+        }
+        System.out.println(studentMap);
 
     }
 
