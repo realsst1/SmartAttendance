@@ -61,6 +61,7 @@ public class DashboardActivity extends AppCompatActivity {
     private Date today;
     private SimpleDateFormat sdfToday;
     private String dateToSearch;
+    private int finalPos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +140,7 @@ public class DashboardActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
 
-                progressDialog.show();
+                //progressDialog.show();
 
                 Uri resultUri = result.getUri();
                 System.out.println(resultUri.getPath());
@@ -187,7 +188,7 @@ public class DashboardActivity extends AppCompatActivity {
                         max = res[i];
                         pos=i;
                     }
-                    System.out.println(res[i]);
+                    //System.out.println(res[i]);
                     list.add(res[i]);
                 }
 
@@ -199,45 +200,47 @@ public class DashboardActivity extends AppCompatActivity {
 
                 //add attendance record
 
-                final int finalPos = pos;
-                databaseReference.child(String.valueOf(pos)).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        boolean flag=false;
-                        for(DataSnapshot d:dataSnapshot.getChildren()){
-                            String dateToCompare=d.child("date").getValue().toString();
-                            if(dateToCompare.equals(dateToSearch)){
-                                flag=true;
-                                break;
-                            }
-                        }
-                        if(flag==false){
-                            HashMap<String,String> dateMap=new HashMap<>();
-                            dateMap.put("date",dateToSearch);
-                            databaseReference.child(String.valueOf(finalPos)).push().setValue(dateMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()) {
-                                        Toast.makeText(DashboardActivity.this, "Attendance added successfully", Toast.LENGTH_LONG).show();
-                                        progressDialog.dismiss();
-                                    }
-                                    else{
-                                        Toast.makeText(DashboardActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                        progressDialog.dismiss();
-                                    }
-                                }
-                            });
-                        }
-                        else{
-                            Toast.makeText(DashboardActivity.this, "Attendance already taken for today", Toast.LENGTH_LONG).show();
-                            progressDialog.dismiss();
-                        }
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                finalPos = pos;
 
-                    }
-                });
+                new MyClass().execute();
+//                databaseReference.child(String.valueOf(pos)).addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        boolean flag=false;
+//                        for(DataSnapshot d:dataSnapshot.getChildren()){
+//                            String dateToCompare=d.child("date").getValue().toString();
+//                            if(dateToCompare.equals(dateToSearch)){
+//                                flag=true;
+//                                break;
+//                            }
+//                        }
+//                        if(flag==false){
+//                            HashMap<String,String> dateMap=new HashMap<>();
+//                            dateMap.put("date",dateToSearch);
+//                            databaseReference.child(String.valueOf(finalPos)).push().setValue(dateMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<Void> task) {
+//                                    if(task.isSuccessful()) {
+//                                        Toast.makeText(DashboardActivity.this, "Attendance added successfully", Toast.LENGTH_LONG).show();
+//                                        progressDialog.dismiss();
+//                                    }
+//                                    else{
+//                                        Toast.makeText(DashboardActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+//                                        progressDialog.dismiss();
+//                                    }
+//                                }
+//                            });
+//                        }
+//                        else{
+//                            Toast.makeText(DashboardActivity.this, "Attendance already taken for today", Toast.LENGTH_LONG).show();
+//                            progressDialog.dismiss();
+//                        }
+//                    }
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
 //                StorageReference filepath = storageReference.child("profile_pictures").child(userID + ".jpg");
 //                filepath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
 //                    @Override
@@ -286,6 +289,65 @@ public class DashboardActivity extends AppCompatActivity {
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
+        }
+    }
+
+    private class MyClass extends AsyncTask<String,String,String>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            databaseReference.child(String.valueOf(finalPos)).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    boolean flag=false;
+                    for(DataSnapshot d:dataSnapshot.getChildren()){
+                        String dateToCompare=d.child("date").getValue().toString();
+                        if(dateToCompare.equals(dateToSearch)){
+                            flag=true;
+                            break;
+                        }
+                    }
+                    if(flag==false){
+                        HashMap<String,String> dateMap=new HashMap<>();
+                        dateMap.put("date",dateToSearch);
+                        databaseReference.child(String.valueOf(finalPos)).push().setValue(dateMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()) {
+                                    Toast.makeText(DashboardActivity.this, "Attendance added successfully", Toast.LENGTH_LONG).show();
+                                    //progressDialog.dismiss();
+                                }
+                                else{
+                                    Toast.makeText(DashboardActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                    //progressDialog.dismiss();
+                                }
+                            }
+                        });
+                    }
+                    else{
+                        Toast.makeText(DashboardActivity.this, "Attendance already taken for today", Toast.LENGTH_LONG).show();
+                        progressDialog.dismiss();
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            progressDialog.dismiss();
         }
     }
 
