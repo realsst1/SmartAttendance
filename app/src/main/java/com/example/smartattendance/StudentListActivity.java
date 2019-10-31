@@ -40,6 +40,9 @@ public class StudentListActivity extends AppCompatActivity {
         studentRecyclerView.setAdapter(studentListAdapter);
 
         studentRef= FirebaseDatabase.getInstance().getReference().child("students");
+
+
+        studentRef.keepSynced(true);
         studentRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

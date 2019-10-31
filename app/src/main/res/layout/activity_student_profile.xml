@@ -52,6 +52,7 @@
         </de.hdodenhof.circleimageview.CircleImageView>
 
         <TextView
+            android:id="@+id/studentProfileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/studentProfileImage"
@@ -95,7 +96,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Attendance"
+                    android:text="Roll Number"
                     android:padding="10dp"
                     android:textSize="20sp"
                     android:textColor="@android:color/black"
@@ -105,9 +106,9 @@
 
                 </TextView>
                 <TextView
-                    android:id="@+id/studentProfileAttendance"
+                    android:id="@+id/studentProfileRoll"
                     android:layout_width="wrap_content"
-                    android:text="Attendance"
+                    android:text="Roll Number"
                     android:padding="10dp"
                     android:textSize="20sp"
                     android:textColor="@android:color/black"
@@ -129,7 +130,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Attendance %"
+                    android:text="Attendance "
                     android:padding="10dp"
                     android:textSize="20sp"
                     android:textColor="@android:color/black"
@@ -139,9 +140,9 @@
 
                 </TextView>
                 <TextView
-                    android:id="@+id/studentProfileAttendancePercent"
+                    android:id="@+id/studentProfileAttendance"
                     android:layout_width="wrap_content"
-                    android:text="Attendance %"
+                    android:text="Attendance "
                     android:padding="10dp"
                     android:textSize="20sp"
                     android:textColor="@android:color/black"

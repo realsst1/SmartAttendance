@@ -1,6 +1,7 @@
 package com.example.smartattendance.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartattendance.Models.Student;
 import com.example.smartattendance.R;
+import com.example.smartattendance.StudentProfileActivity;
 
 import java.util.ArrayList;
 
@@ -34,11 +36,24 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
     @Override
     public void onBindViewHolder(@NonNull StudentListAdapter.ViewHolder holder, int position) {
 
-        String name=studentList.get(position).getName();
+        final String name=studentList.get(position).getName();
         String img=studentList.get(position).getImageURL();
+        final String roll=studentList.get(position).getRoll();
 
         holder.setStudentImage(img);
         holder.setStudentName(name);
+
+        holder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(context, StudentProfileActivity.class);
+                intent.putExtra("roll",roll);
+                intent.putExtra("name",name);
+                context.startActivity(intent);
+            }
+        });
+
+
 
     }
 
