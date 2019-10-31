@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,7 +33,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         setupUIViews();
-
+        final ProgressDialog progressDialog=new ProgressDialog(this);
+        progressDialog.setTitle("Signing In");
+        progressDialog.setMessage("Please wait while we verify your credentials...");
+        progressDialog.setCanceledOnTouchOutside(false);
 
         //get data
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -40,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 email=userEmail.getText().toString();
                 password=userPassword.getText().toString();
+                progressDialog.show();
 
                 //validate
                 if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
@@ -60,9 +65,11 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             System.out.println("hii");
+                            progressDialog.dismiss();
                             //Toast.makeText(LoginActivity.this,"Successfully Logged In",Toast.LENGTH_LONG).show();
                             startActivity(new Intent(LoginActivity.this,DashboardActivity.class));
                         }else{
+                            progressDialog.dismiss();
                             Toast.makeText(LoginActivity.this,task.getException().getMessage(),Toast.LENGTH_LONG).show();
                         }
                     }

@@ -49,7 +49,7 @@ public class DashboardActivity extends AppCompatActivity {
     private StorageReference storageReference;
     private String text;
     private ArrayList<String> studentLabels=new ArrayList<>();
-    private HashMap<Integer,String> studentMap=new HashMap<>();
+    private HashMap<String,String> studentMap=new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +106,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
         System.out.println(studentLabels);
         for(int i=0;i<studentLabels.size();i++){
-            studentMap.put(i,studentLabels.get(i));
+            studentMap.put(Integer.toString(i),studentLabels.get(i));
         }
         System.out.println(studentMap);
 
@@ -177,6 +177,9 @@ public class DashboardActivity extends AppCompatActivity {
                 System.out.println("List\n"+list);
                 System.out.println("Pos:"+pos);
                 System.out.println("Max:"+ Collections.max(list));
+
+                Toast.makeText(DashboardActivity.this,studentMap.get(pos),Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
 
 
 
