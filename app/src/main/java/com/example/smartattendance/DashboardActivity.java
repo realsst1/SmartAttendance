@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -70,6 +71,9 @@ public class DashboardActivity extends AppCompatActivity {
         viewStudents=(CardView)findViewById(R.id.viewStudents);
         aboutUs=(CardView)findViewById(R.id.aboutUs);
         progressDialog=new ProgressDialog(this);
+        progressDialog.setTitle("Analyzing Image");
+        progressDialog.setMessage("Please wait while we analyze the image...");
+        progressDialog.setCanceledOnTouchOutside(false);
 
         today=Calendar.getInstance().getTime();
         sdfToday=new SimpleDateFormat("dd-MM-yyyy");
@@ -135,15 +139,12 @@ public class DashboardActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
 
-                progressDialog.setTitle("Analyzing Image");
-                progressDialog.setMessage("Please wait while we analyze the image...");
-                progressDialog.setCanceledOnTouchOutside(false);
                 progressDialog.show();
 
                 Uri resultUri = result.getUri();
                 System.out.println(resultUri.getPath());
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                String userID = currentUser.getUid();
+
+
 
                 File thumnbailFile = new File(resultUri.getPath());
                 Bitmap thumbnail = BitmapFactory.decodeFile(thumnbailFile.getAbsolutePath());
@@ -168,7 +169,7 @@ public class DashboardActivity extends AppCompatActivity {
                     floatValues[i * 3 + 2] = (val & 0xFF) / 255.0f;
                 }
 
-                float res[]=new float[72];
+                float res[]=new float[10];
                 TensorFlowInferenceInterface inferenceInterface=new TensorFlowInferenceInterface(getAssets(),"file:///android_asset/retrained_graph.pb");
                 inferenceInterface.feed("Placeholder",floatValues,1,224,224,3);
                 inferenceInterface.run(new String[]{"final_result"});
@@ -237,12 +238,6 @@ public class DashboardActivity extends AppCompatActivity {
 
                     }
                 });
-
-
-
-
-
-
 //                StorageReference filepath = storageReference.child("profile_pictures").child(userID + ".jpg");
 //                filepath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
 //                    @Override
@@ -293,4 +288,5 @@ public class DashboardActivity extends AppCompatActivity {
             }
         }
     }
+
 }
