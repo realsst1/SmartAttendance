@@ -6,6 +6,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 
 import com.example.smartattendance.Adapters.StudentListAdapter;
 import com.example.smartattendance.Models.Student;
@@ -16,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StudentListActivity extends AppCompatActivity {
 
@@ -24,6 +28,7 @@ public class StudentListActivity extends AppCompatActivity {
     private RecyclerView studentRecyclerView;
     private StudentListAdapter studentListAdapter;
     private LinearLayoutManager layoutManager;
+    private EditText searchText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,7 @@ public class StudentListActivity extends AppCompatActivity {
         studentListAdapter=new StudentListAdapter(studentArrayList);
         studentRecyclerView.setLayoutManager(layoutManager);
         studentRecyclerView.setAdapter(studentListAdapter);
+        searchText=(EditText)findViewById(R.id.searchText);
 
         studentRef= FirebaseDatabase.getInstance().getReference().child("students");
 
@@ -62,5 +68,33 @@ public class StudentListActivity extends AppCompatActivity {
             }
         });
 
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                filter(editable.toString());
+
+            }
+        });
+
+    }
+
+    public void filter(String text){
+        ArrayList<Student> list=new ArrayList<>();
+        for(Student s:studentArrayList){
+            if(s.getName().toLowerCase().contains(text)){
+                list.add(s);
+            }
+        }
+        studentListAdapter.updateList(list);
     }
 }

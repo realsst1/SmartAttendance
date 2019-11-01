@@ -63,6 +63,12 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
     }
 
 
+    public void updateList(ArrayList<Student> list){
+        studentList=list;
+        notifyDataSetChanged();
+    }
+
+
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         private View view;
