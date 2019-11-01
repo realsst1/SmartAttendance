@@ -19,6 +19,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class StudentListActivity extends AppCompatActivity {
@@ -47,8 +49,9 @@ public class StudentListActivity extends AppCompatActivity {
 
         studentRef= FirebaseDatabase.getInstance().getReference().child("students");
 
-
         studentRef.keepSynced(true);
+
+
         studentRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -57,6 +60,12 @@ public class StudentListActivity extends AppCompatActivity {
                     String name=d.child("name").getValue().toString();
 
                     studentArrayList.add(new Student(name,roll));
+                    Collections.sort(studentArrayList, new Comparator<Student>() {
+                        @Override
+                        public int compare(Student student, Student t1) {
+                            return student.getName().compareTo(t1.getName());
+                        }
+                    });
                     studentListAdapter.notifyDataSetChanged();
 
                 }
